@@ -2,7 +2,8 @@
 title: "Atividade_3_5_site_Mariana_Faitanin"
 author: "Mariana Faitanin"
 date: "23/05/2022"
-output: html_document
+output: 
+  html_document:
 ---
 #Atividade final da disciplina Ciência colaborativa
 
