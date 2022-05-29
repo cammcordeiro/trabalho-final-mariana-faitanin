@@ -58,7 +58,7 @@ names(trigo_gbif)
 trigo_gbif1 <- trigo_gbif$data %>%
   dplyr::select(scientificName, acceptedScientificName, decimalLatitude, decimalLongitude,
          issues, basisOfRecord, occurrenceStatus, rightsHolder, 
-         datasetName, recordedBy, locality) 
+         datasetName, recordedBy, locality, organismID) 
 ```
 
 #Temos 36 variáveis, mas com a função distinct do pacote dplyr conseguimos avaliar quais dessas são únicas.
@@ -211,7 +211,8 @@ write_xlsx(trigo_gbif1,"C:\\ciencia-colab\\Atividade-final\\trab-final\\Trabalho
 
 #Análise explioratória
 ```{r}
-para<-read.csv("parat-gbif2.csv", header = T, sep=";", dec=".")
+para<-read.csv("parat_gbif2.csv", header = T)
+
 plot(scientificName~rightsHolder, data=trigo_gbif1)
 ```
 
