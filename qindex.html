@@ -1,0 +1,198 @@
+---
+title: "Atividade_3_5_Final_Mariana_Faitanin"
+author: "Mariana Faitanin"
+date: "23/05/2022"
+output: html_document
+---
+#Atividade final da disciplina Ciência colaborativa
+
+ATIVIDADE 3
+
+
+##Para iniciar as atividades, é necessário a instalação de alguns pacotes.
+
+```{r}
+require(tidyverse)
+require(rgbif)
+require(dplyr)
+require(ggmap)
+require(maps)
+require(mapdata)
+require(ggplot2)
+require(yaml)
+```
+
+###Com a função "occ_data" podemos realizar uma busca simplificada nos pontos de ocorrência da base de dados GBIF (Global Biodiversity Information Facility). Essa busca será realizadas através do nome ciêntífico e pelas ocorrências.
+###Selecionamos a Pseudopiptadenia contorta, uma espécie vegetal endêmica do Brasil pertencente a família fabaceae.
+
+#O comando "?occ_data" é apenas para checar as funções da função "occ_data".
+#O comando "dim ( ) é para checar as dimensões do objeto pseudo_gbif, isto é, avaliar a quantidade de linhas e colunas.
+```{r}
+# checar funcoes
+?occ_data
+
+# baixar ocorrencias
+trigo_gbif <- occ_data(scientificName = "Trigoniodendron spiritusanctense", 
+                      hasCoordinate = TRUE,
+                      hasGeospatialIssue=FALSE)
+
+# dimensoes
+dim(trigo_gbif)
+
+```
+#
+```{r}
+dim(trigo_gbif$data)
+```
+#Após conferir o número de linhas e colunas do seu objeto, teremos que conferir o nome das colunas dentro desse dataset
+
+```{r}
+# checar campos
+trigo_gbif$data %>% names
+names(trigo_gbif)
+```
+
+#Aqui continuamos selecionando  e validando algumas variáveis do banco de dados para essa e análises futuras. Por exemplo: coordenadas, localidade, nome da base de dados etc.
+```{r}
+trigo_gbif1 <- trigo_gbif$data %>%
+  dplyr::select(scientificName, acceptedScientificName, decimalLatitude, decimalLongitude,
+         issues, basisOfRecord, occurrenceStatus, rightsHolder, 
+         datasetName, recordedBy, locality) 
+```
+
+#Temos 57 variáveis, mas com a função distinct do pacote dplyr conseguimos avaliar quais dessas são únicas.
+
+```{r}
+trigo_gbif1 <- trigo_gbif1 %>% 
+  distinct() 
+```
+
+#Note que das 57 variáveis iniciais restaram 28 ocorrências, isso acontece devido ao a quantidade de colunas iniciais que foram descartadas para essa tarefa. 
+#ps:para ver esse resultado, basta olhar no environment
+
+#Para identificar todos os valores únicos presente nos dados, vamos aplicar a função unique a cada coluna com um loop na função lapply.
+
+```{r}
+# checar niveis dos fatores
+lapply(trigo_gbif1, unique)
+```
+###
+#A partir daqui faremos uma checagem mais detalhada e minuciosa dos nossos dados. Inicialmente, iremos validar as coordenadas geográficas. 
+#ATEÇÃO:Para essa etapa sera necerrário a utilização dos pacotes "bcd" e "CoordinateCleaner".
+
+```{r}
+library(bdc)
+library(CoordinateCleaner)
+
+# checar coordenadas válidas
+check_pf <- 
+  bdc::bdc_coordinates_outOfRange(
+    data = trigo_gbif1,
+    lat = "decimalLatitude",
+    lon = "decimalLongitude")
+
+```
+
+
+#O próximo passo será checar coordenadas válidas e próximas a capitais. A realização dessa etapa é importante e necessária, pois alguns pesquisadores quando não coleta a coordenada no dia do campo acaba colocando o coordenada "padrão" para o fragmento ou a coordenada do municipio.
+```{r}
+cl <- trigo_gbif1 %>%
+  select(acceptedScientificName, decimalLatitude, decimalLongitude) %>%
+  rename(decimallongitude = decimalLongitude,
+         decimallatitude = decimalLatitude,
+         scientificName = acceptedScientificName) %>% 
+  as_tibble() %>% 
+  mutate(val = cc_val(., value = "flagged"),
+         sea = cc_sea(., value = "flagged"),
+         capital = cc_cap(., value = "flagged"))
+```
+
+#A Trigonopdendron spirictusantensis é uma espécies vegetal que ocorre nas florestas estacionais do Espirito Santo e Rio de Janeiro. Não foi encontrado nenhum ponto além desses estados.
+```{r}
+# verificar coordenadas com flags
+
+# capitais (padrão é um raio de 10km)
+cl %>% 
+  rename(decimalLongitude = decimallongitude,
+         decimalLatitude = decimallatitude) %>% 
+  bdc::bdc_quickmap(., col_to_map = "capital")  
+```
+#No exemplo dado em aula, a espécie escolhida apresentava pontos de ocorrencia no mar. Como a espécie selecionada para esse trabalho foi uma espécies arbórea e não teve pontos de ocorrência (errado) no mar, não será necessário a checagem e exclusão dos pontos  que cairam no mar.
+
+#A partir daqui, iremos criar o mapa com os pontos de ocorrência.
+```{r}
+library(ggmap)
+library(maps)
+library(mapdata)
+
+
+brasil <- map_data('world',region="Brazil")  
+# checar pontos
+ 
+ggplot() +
+  geom_polygon(data = brasil, aes(x = long, y = lat, group = group)) +
+  coord_fixed() +
+  theme_classic() +
+  geom_point(data = trigo_gbif1, aes(x = decimalLongitude, y = decimalLatitude), color = "red") +
+  labs(x = "longitude", y = "latitude", title = expression(italic("Trigoniodendrum spirictusantensis")))
+```
+
+
+```{r}
+library(tidyverse)
+library(rgbif)
+
+# ocorrencias
+trigo_gbif <- occ_data(scientificName = "Trigoniodendrum spirictusantensis", 
+                      hasCoordinate = TRUE,
+                      hasGeospatialIssue = FALSE)
+# checar issues
+issues_gbif <- trigo_gbif$data$issues %>% 
+  unique() %>% 
+  strsplit(., "[,]") %>% 
+  unlist()
+
+gbif_issues() %>% 
+  data.frame() %>% 
+  filter(code %in% issues_gbif)
+```
+
+
+```{r}
+# selecionar variaveis
+trigo <- trigo_gbif$data %>%
+  dplyr::select(scientificName, decimalLatitude, decimalLongitude) %>% 
+  distinct()
+```
+
+
+```{r}
+library(leaflet)
+
+# conferir no mapa
+trigo %>% 
+  leaflet() %>% 
+  addTiles() %>% 
+  addMarkers(~decimalLongitude,
+             ~decimalLatitude)
+```
+
+```{r}
+trigo %>% 
+  mutate(lat = round(decimalLatitude)) %>% 
+  group_by(lat, scientificName) %>%
+  summarise(occ = length(scientificName)) %>%
+  ggplot(aes(y = occ, x = lat, color = scientificName)) +
+    geom_point() +
+    geom_smooth() +
+    theme_classic() +
+    labs(x = "latitude", y = 'ocorrências')
+```
+
+
+#Análise explioratória
+```{r}
+
+plot(scientificName~rightsHolder, data=trigo_gbif1)
+```
+
