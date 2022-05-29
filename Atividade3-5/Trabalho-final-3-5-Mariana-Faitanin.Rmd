@@ -138,8 +138,57 @@ ggplot() +
 ```
 
 
+```{r}
+library(tidyverse)
+library(rgbif)
 
-ATIVIDADE 4
+# ocorrencias
+trigo_gbif <- occ_data(scientificName = "Trigoniodendrum spirictusantensis", 
+                      hasCoordinate = TRUE,
+                      hasGeospatialIssue = FALSE)
+# checar issues
+issues_gbif <- trigo_gbif$data$issues %>% 
+  unique() %>% 
+  strsplit(., "[,]") %>% 
+  unlist()
+
+gbif_issues() %>% 
+  data.frame() %>% 
+  filter(code %in% issues_gbif)
+```
+
+
+```{r}
+# selecionar variaveis
+trigo <- trigo_gbif$data %>%
+  dplyr::select(scientificName, decimalLatitude, decimalLongitude) %>% 
+  distinct()
+```
+
+
+```{r}
+library(leaflet)
+
+# conferir no mapa
+trigo %>% 
+  leaflet() %>% 
+  addTiles() %>% 
+  addMarkers(~decimalLongitude,
+             ~decimalLatitude)
+```
+
+```{r}
+trigo %>% 
+  mutate(lat = round(decimalLatitude)) %>% 
+  group_by(lat, scientificName) %>%
+  summarise(occ = length(scientificName)) %>%
+  ggplot(aes(y = occ, x = lat, color = scientificName)) +
+    geom_point() +
+    geom_smooth() +
+    theme_classic() +
+    labs(x = "latitude", y = 'ocorrências')
+```
+
 
 
 
