@@ -273,11 +273,27 @@ brauna %>%
 
 #ATENÇÃO: Melanoxylon brauna e Melanoxylon braunia são Sinônimos e Variante ortográfica, por isso foi considerado os dois.
 
+
+Com os dados obtidos na base de dados do GBIF, podemos observar que existe uma superamostragem para o estado da Bahia.
+Segundo a Flora do Brasil, essas espécies não ocorre naturalmente na região do centro-oeste, o que comprovaria a baixa ocorrência para o Distrito Federal.
+Para os pesquisadores que teem o interessem em trabalhar com mapas de distribuição e adequabilidade de área para a ocorrências das espécies, recomendo que faça uma pesquisa minuciosa em relação a essas coeltas, pois influenciará diretamene no resultado dos seus dados.
+```{r}
+dados1<-read.csv("brauna-hist.csv",header = T, sep=";", dec=",")
+dados1
+summary(dados1)
+
+library(ggplot2)
+
+ggplot(dados1, aes(y = n_individuo, x =stateProvince , fill = stateProvince)) +
+  geom_bar(stat = "identity")
+```
+
+
 #DICA: Você pode exportar a tabela dos dados baixados do gbit, basta seguir os seguintes comandos:
 
 ```{r}
 library(writexl)
-write_xlsx(brauna_gbif1,"C:\\ciencia-colab\\Atividade-final\\trab-final\\Trabalho-Final1-Mariana-Faitanin\\brauna-gbif-ponto1.xlsx")
+write_xlsx(brauna_gbif1,"C:\\ciencia-colab\\Atividade-final\\trab-final\\Trabalho-Final1-Mariana-Faitanin\\brauna-gbif-ponto2.xlsx")
 
 ```
 

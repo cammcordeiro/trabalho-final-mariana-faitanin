@@ -249,16 +249,16 @@ write_xlsx(brauna_gbif1,"C:\\ciencia-colab\\Atividade-final\\trab-final\\Trabalh
 ```
 
 
-#Análise explioratória
+
 ```{r}
-dados1<-read.csv("brauna-gbif-ponto.comp.csv",header = T, sep=";", dec=",")
+dados1<-read.csv("brauna-hist.csv",header = T, sep=";", dec=",")
 dados1
 summary(dados1)
-h=hist(dados1$stateProvince)
-boxplot(dados1$decimalLatitude)
 
-brau<- as.factor(dados1$scientificName)
+library(ggplot2)
 
+ggplot(dados1, aes(y = n_individuo, x =stateProvince , fill = stateProvince)) +
+  geom_bar(stat = "identity")
 
 ```
 
