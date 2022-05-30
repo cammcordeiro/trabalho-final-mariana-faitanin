@@ -11,20 +11,15 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## HOME
 
-A espécie *Melanoxylon* *brauna* Schott (Leguminosae), classificada como Vulnerável (CNCFlora, 2012), é conhecida popularmente como braúna, baraúna, graúna, braúna-preta, maria-preta, rabo-de-macaco e ibirativa. A distribuição natural desta planta ocorre nas Florestas Pluviais, Nebulares e Estacionais nos estados de Minas Gerais, Espírito Santo, Goiás, Rio Grande do Norte, Pará, Mato Grosso, Sergipe, Maranhão, Piauí, Rio de Janeiro, Bahia e São Paulo (LORENZI, 2002; IBAMA, 2008; CNCFlora, 2012; SANTOS et al., 2017). Essas árvores secundárias tardias possuem dispersão anemocórica, porte médio a grande, podendo atingir de 3 a 10m de altura, crescimento lento e diâmetro do caule variando entre 80 cm a 1 m (LORENZI, 2002).
+A espécie Melanoxylon brauna Schott (Leguminosae), classificada como Vulnerável (CNCFlora, 2012), é conhecida popularmente como braúna, baraúna, graúna, braúna-preta, maria-preta, rabo-de-macaco e ibirativa. A distribuição natural desta planta ocorre nas Florestas Pluviais, Nebulares e Estacionais nos estados de Minas Gerais, Espírito Santo, Goiás, Rio Grande do Norte, Pará, Mato Grosso, Sergipe, Maranhão, Piauí, Rio de Janeiro, Bahia e São Paulo (LORENZI, 2002; IBAMA, 2008; CNCFlora, 2012; SANTOS et al., 2017). Essas árvores secundárias tardias possuem dispersão anemocórica, porte médio a grande, podendo atingir de 3 a 10m de altura, crescimento lento e diâmetro do caule variando entre 80 cm a 1 m (LORENZI, 2002).
 A florestes geralmente são  vistosas com hipanto curto e coloração amarela. Seus frutos são do tipo vagem com coloração castanha.
-A floração dessas espécie ocorre entre os meses de fevereiro e maio, enquanto que a maturação dos frutos ocorrem entre agosto e novembro (Arvores do Brasil,2022)
+A floração dessas espécie ocorre entre os meses de fevereiro e maio, enquanto que a maturação dos frutos ocorrem entre agosto e novembro. (https://www.arvores.brasil.nom.br/new/brauna/index.htm
 
 
-
-![Arvore da brauna - Fonte: Árvores do Brasil](https://www.arvores.brasil.nom.br/new/brauna/brauna01.jpg)
-
-![Flor da brauna -Fonte:Programa Arboretum @progarboretum](https://pbs.twimg.com/media/CpDguZ-WAAI5Pmc.jpg)
-
-A seguir, iremos apresentar a distirbuição (através dos dados de ocorrência) da espécies *Melanoxylon* *brauna*. Todos os pontos de ocorrência foram obtidos pelo banco de dados GBIF (Global Biodiversity Information Facility).
+A seguir, iremos apresentar a distirbuição (através dos dados de ocorrência) da espécies Melanoxylon brauna. Todos os pontos de ocorrência foram obtidos pelo banco de dados GBIF (Global Biodiversity Information Facility).
 
 Todos os dados apresentados nesse script é compativel com o software "R".
-Antes de iniciar a apresentação dos dados, precisamos carregar os seguintes pacotes:, **tidyverse**, **rgbif**, **dplyr**, **ggmap**, **maps**, **mapdata**, **ggplot2** e **yaml**.
+Antes de iniciar a apresentação dos dados, precisamos carregar os seguintes pacotes:, tidyverse, rgbif, dplyr, ggmap, maps, mapdata, ggplot2 e yaml.
 
 ###Atenção: comando para carregar todos os pacotes de uma vez, casa dê algum erro durante as análises recomendamos os pacotes sejam novamente carregados. 
 ```{r cars}
@@ -41,8 +36,8 @@ require(yaml)
 ## Baixar os pontos de ecorrência
 
 Com a função "occ_data" podemos realizar uma busca simplificada nos pontos de ocorrência da base de dados GBIF (Global Biodiversity Information Facility). Essa busca será realizadas através do nome ciêntífico e pelas ocorrências.
-O comando \_"?occ_data"\_ é apenas para checar as funções da função \_"occ_data"\_.
-O comando \_"dim ( )"\_ é para checar as dimensões do objeto brauna_gbif, isto é, avaliar a quantidade de linhas e colunas.
+O comando "?occ_data" é apenas para checar as funções da função "occ_data".
+O comando "dim ( ) é para checar as dimensões do objeto pseudo_gbif, isto é, avaliar a quantidade de linhas e colunas.
 
 
 ```{r}
@@ -104,6 +99,11 @@ check_pf <-
     data = brauna_gbif1,
     lat = "decimalLatitude",
     lon = "decimalLongitude")
+```
+
+Não encontrados nenhuma cooredenada inválida.
+```{r}
+
 ```
 
 
@@ -284,19 +284,5 @@ write_xlsx(brauna_gbif1,"C:\\ciencia-colab\\Atividade-final\\trab-final\\Trabalh
 ##Note que  primeiro você precisa selecionar o dataframe que deseja baixar e no segundo momento copiar o caminho para onde a tabela ficará salva.
 
 
-_________________________________________________________________________________________________
 
-#Referências:
 
-Arvores do Brasil, 2022. Link de acesso:  https://www.arvores.brasil.nom.br/new/brauna/index.htm
-Acessado em: 29/05/2022
-
-CNCFlora. 2015. CENTRO NACIONAL DE CONSERVAÇÃO DA FLORA. Disponível em: http://cncflora.jbrj.gov.br/portal/pt-br/listavermelha. Acesso em: 09 nov. 2017.
-
-IBAMA. 2008. Lista oficial de flora ameaçada de extinção. INSTITUTO BRASILEIRO DO MEIO AMBIENTE E DOS RECURSOS NATURAIS. Disponível em: <http://www.ibama.gov.br/flora>. Acesso em: 18 out. 2017.
-
-LORENZI, H. 2002. Árvores brasileiras: manual de identificação e cultivo de plantas arbóreas nativas do Brasil. Vol 2. Nova Odessa: Plantarum. 368p.
-
-Melanoxylon brauna Schott in GBIF Secretariat (2021). GBIF Backbone Taxonomy. Checklist dataset https://doi.org/10.15468/39omei accessed via GBIF.org on 2022-05-30.
-
-SANTOS, M.M.; ATAÍDE, G.D.M. & SOUZA, G.A.D. 2017. Germination of Seeds of Melanoxylon brauna Schott. under Heat Stress: Production of Reactive Oxygen Species and Antioxidant Activity. Forests, 8(11): 405.
