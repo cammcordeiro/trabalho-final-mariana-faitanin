@@ -1,6 +1,6 @@
 ---
 title: "Trabalho final - Ciência colaborativa"
-author: "Mariana Faitanin"
+author: "Mariana Alves Faitanin"
 date: "5/29/2022"
 output: html_document
 ---
