@@ -107,7 +107,7 @@ cl <- brauna_gbif1 %>%
          capital = cc_cap(., value = "flagged"))
 ```
 
-#A Trigonopdendron spirictusantensis é uma espécies vegetal que ocorre nas florestas estacionais do Espirito Santo e Rio de Janeiro. Não foi encontrado nenhum ponto além desses estados.
+#A *Trigonopdendron spirictusantensis* é uma espécies vegetal que ocorre nas florestas estacionais do Espirito Santo e Rio de Janeiro. Não foi encontrado nenhum ponto além desses estados. (OPS - outra espécie)
 ```{r}
 # verificar coordenadas com flags
 
@@ -125,7 +125,7 @@ cl %>%
          decimalLatitude = decimallatitude) %>% 
   bdc::bdc_quickmap(., col_to_map = "sea")
 ```
-#No exemplo dado em aula, a espécie escolhida apresentava pontos de ocorrencia no mar. Como a espécie selecionada para esse trabalho foi uma espécies arbórea e não teve pontos de ocorrência (errado) no mar, não será necessário a checagem e exclusão dos pontos  que cairam no mar.
+#No exemplo dado em aula, a espécie escolhida apresentava pontos de ocorrência no mar. Como a espécie selecionada para esse trabalho foi uma espécies arbórea e não teve pontos de ocorrência (errado) no mar, não será necessário a checagem e exclusão dos pontos  que cairam no mar.
 
 # Para realizarmos uma apuração mais fina, checamos a ocorrencia da especies de uma forma mais restrita atravÃ©s dos dados em stateProvince, que são os herbários onde essas amostras estão depositadas. Como os dados de habitat estão incompletos, em sua maioria sem infomração (NA) achei melhor me baser por essa variável.
 
@@ -179,10 +179,10 @@ library(tidyverse)
 library(rgbif)
 
 
-# ocorrencias
-brauna_gbif <- occ_data(scientificName = "melanoxylon brauna", 
-                      hasCoordinate = TRUE,
-                      hasGeospatialIssue = FALSE)
+# # ocorrencias
+# brauna_gbif <- occ_data(scientificName = "melanoxylon brauna", 
+#                       hasCoordinate = TRUE,
+#                       hasGeospatialIssue = FALSE)
 # checar issues
 issues_gbif <- brauna_gbif$data$issues %>% 
   unique() %>% 
@@ -196,10 +196,17 @@ gbif_issues() %>%
 
 
 ```{r}
-# selecionar variaveis
+# selecionar variaveis e excluir ocorrencias no mar
 brauna <- brauna_gbif$data %>%
   dplyr::select(scientificName, decimalLatitude, decimalLongitude) %>% 
-  distinct()
+  distinct() %>% 
+  rename(decimallongitude = decimalLongitude, # eh preciso renomear para a funcao reconhecer :/
+         decimallatitude = decimalLatitude) %>% 
+  CoordinateCleaner::cc_sea() %>% 
+  rename(decimalLongitude = decimallongitude, # eh preciso renomear para a funcao reconhecer :/
+         decimalLatitude = decimallatitude) 
+
+
 ```
 
 
@@ -213,19 +220,8 @@ brauna %>%
   addMarkers(~decimalLongitude,
              ~decimalLatitude)
 ```
-#A melaxolylon brauna é uma espécies endêmica do Brasil, com ocorrência nas regiçoes Nordeste (Alagoas, Bahia, Paraíba, Pernambuco, Rio Grande do Norte, Sergipe)e Sudeste (Espírito Santo, Minas Gerais, Rio de Janeiro, São Paulo). Através do gráfico plotado com os dados de latitude e ocorrência, podemos perceber que essa espécie apresenta uma distribição dispersa entre os graus -25 a -10.Enretando, quando plotamos os mesmo pontos de ocorrência para a variável longitude, podemos observar que a ditribuição dessa espécie apresenta um pico entre os graus -45 a -40, região correspondente a Mata Atlântica e a parte da caatinga e cerrado.
+#A **Melaxolylon brauna** é uma espécies endêmica do Brasil, com ocorrência nas regiçoes Nordeste (Alagoas, Bahia, Paraíba, Pernambuco, Rio Grande do Norte, Sergipe)e Sudeste (Espírito Santo, Minas Gerais, Rio de Janeiro, São Paulo). Através do gráfico plotado com os dados de latitude e ocorrência, podemos perceber que essa espécie apresenta uma distribição dispersa entre os graus -25 a -10.Enretando, quando plotamos os mesmo pontos de ocorrência para a variável longitude, podemos observar que a ditribuição dessa espécie apresenta um pico entre os graus -45 a -40, região correspondente a Mata Atlântica e a parte da caatinga e cerrado.
 
-```{r}
-brauna %>% 
-  mutate(lat = round(decimalLatitude)) %>% 
-  group_by(lat, scientificName) %>%
-  summarise(occ = length(scientificName)) %>%
-  ggplot(aes(y = occ, x = lat, color = scientificName)) +
-    geom_point() +
-    geom_smooth() +
-    theme_classic() +
-    labs(x = "Latitude", y = 'ocorrências')
-```
 ```{r}
 brauna %>% 
   mutate(long = round(decimalLongitude)) %>% 
@@ -238,28 +234,31 @@ brauna %>%
     labs(x = "Longitude", y = 'ocorrências')
 ```
 
-#ATENÇÃO: Melanoxylon brauna e Melanoxylon braunia são Sinônimos e Variante ortográfica, por isso foi considerado os dois.
+#ATENÇÃO: **Melanoxylon brauna** e **Melanoxylon braunia** são Sinônimos e Variante ortográfica, por isso foi considerado os dois.
 
 #Comando para exportar a tabela em formado .xlsx
 ```{r}
 library(writexl)
-write_xlsx(brauna_gbif1,"C:\\ciencia-colab\\Atividade-final\\trab-final\\Trabalho-Final1-Mariana-Faitanin\\brauna-gbif-ponto1.xlsx")
+write_xlsx(brauna_gbif1,"Trabalho-Final1-Mariana-Faitanin\brauna-gbif-ponto1.xlsx")
 
 ```
 
 
 #Análise explioratória
 ```{r}
-dados1<-read.csv("brauna-gbif-ponto.comp.csv",header = T, sep=";", dec=",")
+dados1 <-read.csv("brauna-gbif-ponto.comp.csv",header = T, sep=";", dec=",")
 dados1
 summary(dados1)
-h=hist(dados1$stateProvince)
+# h = hist(dados1$stateProvince)
+
+dados1 %>% 
+  ggplot(aes(y = stateProvince)) +
+    geom_histogram(stat = "count") +
+    theme_classic()
+
 boxplot(dados1$decimalLatitude)
 
-brau<- as.factor(dados1$scientificName)
+brau <- as.factor(dados1$scientificName)
 
 
 ```
-
-smkaldmklsamkdlabvb
-vbvbv

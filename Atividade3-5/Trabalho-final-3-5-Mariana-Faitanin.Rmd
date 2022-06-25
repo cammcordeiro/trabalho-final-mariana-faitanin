@@ -60,7 +60,7 @@ trigo_gbif1 <- trigo_gbif$data %>%
          datasetName, recordedBy, locality) 
 ```
 
-#Temos 57 variáveis, mas com a função distinct do pacote dplyr conseguimos avaliar quais dessas são únicas.
+#Temos 57 variáveis, mas com a função distinct do pacote `dplyr` conseguimos avaliar quais dessas são únicas.
 
 ```{r}
 trigo_gbif1 <- trigo_gbif1 %>% 
@@ -107,7 +107,7 @@ cl <- trigo_gbif1 %>%
          capital = cc_cap(., value = "flagged"))
 ```
 
-#A Trigonopdendron spirictusantensis é uma espécies vegetal que ocorre nas florestas estacionais do Espirito Santo e Rio de Janeiro. Não foi encontrado nenhum ponto além desses estados.
+#A *Trigonopdendron spirictusantensis* é uma espécies vegetal que ocorre nas florestas estacionais do Espirito Santo e Rio de Janeiro. Não foi encontrado nenhum ponto além desses estados.
 ```{r}
 # verificar coordenadas com flags
 
@@ -140,12 +140,13 @@ ggplot() +
 
 ```{r}
 library(tidyverse)
-library(rgbif)
+# library(rgbif)
 
 # ocorrencias
-trigo_gbif <- occ_data(scientificName = "Trigoniodendrum spirictusantensis", 
-                      hasCoordinate = TRUE,
-                      hasGeospatialIssue = FALSE)
+# trigo_gbif <- occ_data(scientificName = "Trigoniodendrum spirictusantensis", 
+#                       hasCoordinate = TRUE,
+#                       hasGeospatialIssue = FALSE)
+
 # checar issues
 issues_gbif <- trigo_gbif$data$issues %>% 
   unique() %>% 
@@ -192,7 +193,12 @@ trigo %>%
 
 #Análise explioratória
 ```{r}
+# plot(scientificName~rightsHolder, data=trigo_gbif1)
 
-plot(scientificName~rightsHolder, data=trigo_gbif1)
+trigo_gbif1 %>% 
+  ggplot(aes(y = rightsHolder)) +
+    geom_histogram(stat = "count") +
+    theme_classic()
+
 ```
 
